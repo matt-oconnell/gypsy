@@ -1,0 +1,47 @@
+extends layout
+
+block content
+
+    h1 Gypsy Housing
+    div.form
+        div.search
+            span.label Search
+            input(type="text", name="search")
+        div.type
+            select(name="type")
+                option(value="all" selected) All
+                option(value="seeking") Seeking
+                option(value="offering") Offering
+                option(value="misc") Misc
+        button.submit GO
+
+    each post in posts
+        div.post
+            - if(post)
+                // Debug
+                // !=JSON.stringify(post)
+                p.time #{new Date(post.created_time)}
+                p.caption= post.message
+                - if(post.from)
+                    p.author Posted by: <a href="https://facebook.com/#{post.from.id}"><span>#{post.from.name}</span></a>
+                - if(post.attachments)
+                    -if(post.attachments.data)
+                        -if(post.attachments.data[0].subattachments)
+                            -if(post.attachments.data[0].subattachments.data)
+                                | <div class="photos">
+                            each photo in post.attachments.data[0].subattachments.data
+                                - if(photo.media)
+                                - if(photo.media.image)
+                                    a(href="#{photo.media.image.src}" data-lightbox="#{post.id}")
+                                        img(src='#{photo.media.image.src}')
+                            |</div>
+                br
+                a(href='https://facebook.com/#{post.id}') Link on Facebook
+                - if(post.comments)
+                    p.toggle-comments Show Comments
+                    div.comments.closed
+                        each comment in post.comments.data
+                            div.comment
+                                p.message= comment.message
+                                a(href='https://facebook.com/#{comment.from.id}')
+                                    p.name= comment.from.name
